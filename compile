@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Exit on failed command
+set -e
+
+mkdir -p build
+
+# https://www.rapidtables.com/code/linux/gcc/gcc-g.html
+# -g3 puts the maximun debug data in the binary; none is included by default.
+gcc -o build/test_dwarf -g3 test_dwarf.c
+# https://developer.ibm.com/articles/au-dwarf-debug-format/
+dwarfdump build/test_dwarf > build/test_dwarf_debug_dwarfdump.txt
+readelf -w build/test_dwarf > build/test_dwarf_debug_elf.txt

@@ -14,26 +14,26 @@
 
 #pragma once
 
-#define DEFINE_ARRAY_LIST_HEADER(prefix, value_type)                           \
-  struct prefix##_array_list {                                                 \
+#define DEFINE_ARRAY_LIST_HEADER_FULL_NAME_CONTROL(name, option_prefix,        \
+                                                   value_type)                 \
+  struct name {                                                                \
     value_type *elements;                                                      \
     u_int32_t length;                                                          \
     u_int32_t capacity;                                                        \
   };                                                                           \
-  struct prefix##_array_list_result DEFINE_RESULT(struct prefix##_array_list,  \
-                                                  int);                        \
-  struct prefix##_option DEFINE_OPTION(value_type);                            \
-  struct prefix##_array_list_result prefix##_array_list_create();              \
-  struct realloc_result prefix##_array_list_add(                               \
-      struct prefix##_array_list *list, value_type element);                   \
-  struct prefix##_option prefix##_array_list_get(                              \
-      struct prefix##_array_list *list, u_int32_t index);                      \
-  void prefix##_array_list_free(struct prefix##_array_list *list);
+  struct name##_result DEFINE_RESULT(struct name, int);                        \
+  struct option_prefix##_option DEFINE_OPTION(value_type);                     \
+  struct name##_result name##_create();                                        \
+  struct realloc_result name##_add(struct name *list, value_type element);     \
+  struct option_prefix##_option name##_get(struct name *list,                  \
+                                           u_int32_t index);                   \
+  void name##_free(struct name *list);
 
-#define DEFINE_ARRAY_LIST_IMPL(prefix, value_type)                             \
-  struct prefix##_array_list_result prefix##_array_list_create() {             \
-    struct prefix##_array_list_result result;                                  \
-    struct prefix##_array_list list;                                           \
+#define DEFINE_ARRAY_LIST_IMPL_FULL_NAME_CONTROL(name, option_prefix,          \
+                                                 value_type)                   \
+  struct name##_result name##_create() {                                       \
+    struct name##_result result;                                               \
+    struct name list;                                                          \
     list.length = 0;                                                           \
     /* Default size of array will be 32. */                                    \
     list.capacity = 32;                                                        \
@@ -48,8 +48,7 @@
     return result;                                                             \
   }                                                                            \
                                                                                \
-  struct realloc_result prefix##_array_list_add(                               \
-      struct prefix##_array_list *list, value_type element) {                  \
+  struct realloc_result name##_add(struct name *list, value_type element) {    \
     struct realloc_result allocation;                                          \
     if (list->length == list->capacity) {                                      \
       list->capacity *= 2;                                                     \
@@ -65,9 +64,9 @@
     return allocation;                                                         \
   }                                                                            \
                                                                                \
-  struct prefix##_option prefix##_array_list_get(                              \
-      struct prefix##_array_list *list, u_int32_t index) {                     \
-    struct prefix##_option result;                                             \
+  struct option_prefix##_option name##_get(struct name *list,                  \
+                                           u_int32_t index) {                  \
+    struct option_prefix##_option result;                                      \
     if (list->length == 0) {                                                   \
       NONE(result);                                                            \
       return result;                                                           \
@@ -75,6 +74,11 @@
     SOME(result, list->elements[index]);                                       \
     return result;                                                             \
   }                                                                            \
-  void prefix##_array_list_free(struct prefix##_array_list *list) {            \
-    free(list->elements);                                                      \
-  }
+  void name##_free(struct name *list) { free(list->elements); }
+
+#define DEFINE_ARRAY_LIST_HEADER(prefix, option_prefix, value_type)            \
+  DEFINE_ARRAY_LIST_HEADER_FULL_NAME_CONTROL(prefix##_array_list,              \
+                                             option_prefix, value_type)
+#define DEFINE_ARRAY_LIST_IMPL(prefix, option_prefix, value_type)              \
+  DEFINE_ARRAY_LIST_IMPL_FULL_NAME_CONTROL(prefix##_array_list, option_prefix, \
+                                           value_type)

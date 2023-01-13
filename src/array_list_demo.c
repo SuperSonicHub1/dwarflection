@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-DEFINE_ARRAY_LIST_HEADER(int, int)
-DEFINE_ARRAY_LIST_IMPL(int, int)
+DEFINE_ARRAY_LIST_HEADER(int, int, int)
+DEFINE_ARRAY_LIST_IMPL(int, int, int)
 
 int main() {
   printf("Allocating array.\n");
